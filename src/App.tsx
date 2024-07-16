@@ -41,9 +41,17 @@ const Broken: Component = () => {
 const App: Component = () => {
     const [page, setPage] = createSignal("TicTacToe");
     return (
-        <ErrorBoundary fallback={(error, reset) => <AppError error={error} reset={reset} />}>
-            <TicTacToeGame />
-        </ErrorBoundary>
+        <>
+            <meta name="description" content="Fun Tic-Tac-Toe Game with AI. Modes: PvP, PvAI, AIvAI" />
+            <meta property="og:title" content="Tic-Tac-Toe Game" />
+            <meta property="og:url" content="https://mayank442000.github.io/Tic-Tac-Toe/" />
+            <meta property="og:image" content="./src/assets/Tic-Tac-Toe-icon.png" />
+            <link rel="shortcut icon" type="image/ico" href="./src/assets/Tic-Tac-Toe.ico" />
+            <title>Tic-Tac-Toe Game</title>
+            <ErrorBoundary fallback={(error, reset) => <AppError error={error} reset={reset} />}>
+                <TicTacToeGame />
+            </ErrorBoundary>
+        </>
     );
 };
 
