@@ -56,6 +56,7 @@ const TicTacToeGame = () => {
                 setBoardStateClass([...boardStateClass().slice(0, index), "mrkd", ...boardStateClass().slice(index + 1)]);
                 if (setIsDrawn(isDraw(boardState(), nxt_turn_symb))) {
                     console.log("Drawn");
+                    setCurPlayer(!curPlayer());
                     setPlayable(false);
                     setIsDrawn(true);
                 }
