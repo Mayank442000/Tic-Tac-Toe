@@ -8,7 +8,7 @@ import { scoreEachInd, checkMaxScore, checkWin, victoryInds, isDraw, getBestMove
 import { sleep } from "./general";
 
 const TicTacToeGame = () => {
-    const AI_delay = 690; // milliseconds
+    const AI_delay = 690; // 420 // milliseconds
     let AI_1 = false,
         AI_2 = false;
     // let flag = true;
