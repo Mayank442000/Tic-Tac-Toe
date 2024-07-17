@@ -9,6 +9,8 @@ import { sleep } from "./general";
 
 const TicTacToeGame = () => {
     const AI_delay = 690; // milliseconds
+    let AI_1 = false,
+        AI_2 = false;
     // let flag = true;
     const [boardState, setBoardState] = createSignal<BoardState>(["", "", "", "", "", "", "", "", ""]); // l = ["X", "O", "X", "O", "X", "O", "X", "O", "X"]; [list(map(lambda x:int(x)-1,e)) for e in l]
     const [boardStateClass, setBoardStateClass] = createSignal(["unmrk", "unmrk", "unmrk", "unmrk", "unmrk", "unmrk", "unmrk", "unmrk", "unmrk"]);
@@ -29,10 +31,11 @@ const TicTacToeGame = () => {
     const markCell = (index: number) => {
         if (!boardState()[index] && playable()) {
             let cur_turn = turn();
-            let turn_symb: symbl = getTurnSymbl(cur_turn);
+            let cur_turn_symb: symbl = getTurnSymbl(cur_turn);
+            let nxt_turn_symb: symbl = getTurnSymbl(!cur_turn);
             setBoardState([...boardState().slice(0, index), turn() ? "X" : "O", ...boardState().slice(index + 1)] as BoardState);
             console.log(cur_turn, boardState());
-            scores = scoreEachInd(boardState(), turn_symb);
+            scores = scoreEachInd(boardState(), cur_turn_symb);
             max_score_info = checkMaxScore(scores);
             console.log(cur_turn, scores);
             if (checkWin(max_score_info)) {
@@ -42,7 +45,7 @@ const TicTacToeGame = () => {
                 for (let i of victoryInds[max_score_info.indices[0]]) cur_board_state_class[i] = "won";
                 cur_board_state_class[index] = "vic";
                 console.log(cur_board_state_class);
-                for (let i in cur_board_state) if (cur_board_state[i] && cur_board_state[i] !== turn_symb) cur_board_state_class[i] = "lost";
+                for (let i in cur_board_state) if (cur_board_state[i] && cur_board_state[i] !== cur_turn_symb) cur_board_state_class[i] = "lost";
                 if (cur_turn) setScore1(score1() + 1);
                 else setScore2(score2() + 1);
                 setCurPlayer(cur_turn);
@@ -51,7 +54,7 @@ const TicTacToeGame = () => {
                 setBoardStateClass(cur_board_state_class);
             } else {
                 setBoardStateClass([...boardStateClass().slice(0, index), "mrkd", ...boardStateClass().slice(index + 1)]);
-                if (setIsDrawn(isDraw(boardState(), turn_symb))) {
+                if (setIsDrawn(isDraw(boardState(), nxt_turn_symb))) {
                     console.log("Drawn");
                     setPlayable(false);
                     setIsDrawn(true);
@@ -84,18 +87,41 @@ const TicTacToeGame = () => {
         if (event.target == null) return;
         const value = (event.target as HTMLInputElement).value;
         console.log(value);
-        if (value === "P1") setPlayer1(true);
-        if (value === "A1") setPlayer1(false);
-        if (value === "P2") setPlayer2(true);
-        if (value === "A2") setPlayer2(false);
+        const doing_ai_pre = AI_1 || AI_2;
+        if (value === "P1") {
+            AI_1 = false;
+            setPlayer1(true);
+        }
+        if (value === "A1") {
+            AI_1 = true;
+            setPlayer1(false);
+        }
+        if (value === "P2") {
+            AI_2 = false;
+            setPlayer2(true);
+        }
+        if (value === "A2") {
+            AI_2 = true;
+            setPlayer2(false);
+        }
+        const doing_ai_pst = AI_1 || AI_2;
+        if (!doing_ai_pre && doing_ai_pst) AI_play();
     };
 
-    const AI_play = () => {
+    const AI_play = (delay = AI_delay) => {
         const cur_turn = getTurnSymbl(turn());
         // if ((!player1() && cur_turn === "X") || (!player2() && cur_turn === "O")) setTimeout(() => markCell(getBestMove(boardState(), cur_turn)), AI_delay);
-        if ((!player1() && cur_turn === "X") || (!player2() && cur_turn === "O")) markCell(getBestMove(boardState(), cur_turn));
+        // if ((!player1() && cur_turn === "X") || (!player2() && cur_turn === "O")) markCell(getBestMove(boardState(), cur_turn));
+        if ((AI_1 && cur_turn === "X") || (AI_2 && cur_turn === "O")) markCell(getBestMove(boardState(), cur_turn));
+        else if (!(AI_1 || AI_2)) return; // Check before delay postpone
+        // {
+        //     if (delay > 2000) return;
+        //     return setTimeout(() => AI_play(delay + 100), delay);
+        // }
+        setTimeout(() => AI_play(delay), delay);
     };
-    setInterval(AI_play, AI_delay);
+
+    // setInterval(AI_play, AI_delay);
     // createEffect(AI_play);
 
     return (

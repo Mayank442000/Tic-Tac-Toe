@@ -36,15 +36,21 @@ const getBestMove = (boardState: BoardState, symbl: symbl): number => {
 };
 
 const isDraw = (boardState: BoardState, turn: symbl): boolean => {
+    const ttl_empty = countOccurrences(boardState, "");
+    const ttl_empty_m1 = ttl_empty > 1;
+    const ttl_empty_m2 = ttl_empty > 2;
+    let x, o, e;
     for (const ind of victoryInds) {
         const arr = [boardState[ind[0]], boardState[ind[1]], boardState[ind[2]]];
-        const x = countOccurrences(arr, "X");
-        const o = countOccurrences(arr, "O");
-        const _ = countOccurrences(arr, "");
-        if (_ > 1 || (_ == 1 && ((x == 2 && turn == "X") || (o == 2 && turn == "O")))) {
-            console.log("x:", x, "\no:", o, "\n_:", _);
+        x = countOccurrences(arr, "X");
+        o = countOccurrences(arr, "O");
+        e = countOccurrences(arr, "");
+        // if ((ttl_empty_m2 && e > 1) || (e == 1 && ((x == 2 && turn == "X") || (o == 2 && turn == "O")))) { // Ideal no miss last block
+        if ((ttl_empty_m2 && e > 1) || (e == 1 && ((x == 2 && (turn == "X" || ttl_empty_m1)) || (o == 2 && (turn == "O" || ttl_empty_m1))))) {
+            // console.log("x:", x, "\no:", o, "\n_:", e, "\nt:", turn);
             return false;
         }
+        // console.log("x:", x, "\no:", o, "\n_:", e, "\nt:", turn);
     }
     return true;
 };
